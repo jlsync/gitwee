@@ -1,11 +1,16 @@
-#!/usr/bin/ruby 
+#!/usr/bin/env ruby 
 
 
 require 'rubygems'
 require 'grit'
 include Grit
 
-repo = Repo.new(ARGV[1])
+repo = Repo.new(ARGV[0])
 
+repo.log.each do |lm|
+
+  puts "#{lm.id_abbrev} #{lm.message}"
+
+end
 
 
