@@ -1,0 +1,11 @@
+#!/usr/bin/ruby 
+
+
+require 'rubygems'
+require 'grit'
+include Grit
+
+repo = Repo.new(ARGV[1])
+
+
+
