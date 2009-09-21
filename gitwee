@@ -1,16 +1,52 @@
 #!/usr/bin/env ruby 
 
-
 require 'rubygems'
+require 'twitter'
 require 'grit'
 include Grit
 
-repo = Repo.new(ARGV[0])
+src_dir = ARGV[0]
+branch = "stable"
+twitter_username = "username"
+twitter_password = "password"
 
-repo.log.each do |lm|
+history_limit = 20 # 200 max
 
-  puts "#{lm.id_abbrev} #{lm.message}"
+repo = Repo.new(src_dir)
 
+httpauth = Twitter::HTTPAuth.new(twitter_username, twitter_password)
+client = Twitter::Base.new(httpauth)
+timeline = client.user_timeline(:count => history_limit)
+
+last_sha = ""
+# first find the most recent commit message
+timeline.each do |message|
+  if matchdata = message.text.match(/^(\w{6}) /)
+    last_sha = matchdata[1]
+    break
+  end
 end
 
+puts "last sha found on twitter: #{last_sha}"
 
+
+new_commits = []
+repo.commits(branch, history_limit).each do |commit|
+  break if commit.id_abbrev == last_sha
+  new_commits << commit
+end
+
+# oldest newest update first
+new_commits.reverse.each do |commit|
+
+  unless commit.message.match(/Merge branch '\w+' into \w+/)
+    mesg = commit.id_abbrev + " " + commit.message[0,150] 
+    if commit.message.size > 150
+      mesg += "..."
+    end
+    puts "posting: #{mesg}"
+  end
+
+  client.update(mesg)
+  sleep 1
+end
