@@ -7,7 +7,7 @@ include Grit
 
 
 src_dir = ARGV[0]
-branch = "stable"
+branch = "origin/stable"
 twitter_username = "username"
 twitter_password = "password"
 
