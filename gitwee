@@ -41,7 +41,7 @@ end
 new_commits.reverse.each do |commit|
 
   unless commit.message.match(/Merge branch '\w+' into \w+/)
-    mesg = commit.id_abbrev + " " + commit.message[0,150] 
+    mesg = commit.id_abbrev + " " + commit.message[0,150].sub(/\n.*/m,"")
     if commit.message.size > 150
       mesg += "..."
     end
