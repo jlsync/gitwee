@@ -49,8 +49,9 @@ new_commits.reverse.each do |commit|
       mesg += "..."
     end
     puts "posting: #{mesg}"
+
+    client.update(mesg)
+    sleep 1
   end
 
-  client.update(mesg)
-  sleep 1
 end
