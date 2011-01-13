@@ -8,19 +8,23 @@ include Grit
 
 src_dir = ARGV[0]
 branch = "origin/stable"
-TWITTER_CONSUMER_KEY = "key........"
-TWITTER_CONSUMER_SECRET = "secret......"
-TWITTER_OAUTH_TOKEN = "token......"
-TWITTER_OAUTH_TOKEN_SECRET = "tokent_secret....."
+YOUR_CONSUMER_KEY = "key........"
+YOUR_CONSUMER_SECRET = "secret......"
+YOUR_OAUTH_TOKEN = "token......"
+YOUR_OAUTH_TOKEN_SECRET = "tokent_secret....."
 
 history_limit = 20 # 200 max
 
 repo = Repo.new(src_dir)
 
-oauth = Twitter::OAuth.new(TWITTER_CONSUMER_KEY , TWITTER_CONSUMER_SECRET)
-oauth.authorize_from_access(TWITTER_OAUTH_TOKEN , TWITTER_OAUTH_TOKEN_SECRET)
-client = Twitter::Base.new(oauth)
-timeline = client.user_timeline(:count => history_limit)
+Twitter.configure do |config|
+  config.consumer_key = YOUR_CONSUMER_KEY
+  config.consumer_secret = YOUR_CONSUMER_SECRET
+  config.oauth_token = YOUR_OAUTH_TOKEN
+  config.oauth_token_secret = YOUR_OAUTH_TOKEN_SECRET
+end
+
+timeline = Twitter.home_timeline(:count => history_limit)
 
 last_sha = ""
 # first find the most recent commit message
@@ -50,7 +54,7 @@ new_commits.reverse.each do |commit|
     end
     puts "posting: #{mesg}"
 
-    client.update(mesg)
+    Twitter.update(mesg)
     sleep 1
   end
 
